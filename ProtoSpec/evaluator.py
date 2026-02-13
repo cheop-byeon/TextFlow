@@ -12,10 +12,6 @@ from ProtoSpec.generation import parallel_generations
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-_WARNING = """
-Code execution is required for this task but is disabled. Set --allow_code_execution to enable.
-"""
-
 # Task comparison configuration
 TASK_COMPARISON_CONFIG = {
     "ids_auto_complete": {"compare_old": True, "compare_comm": False},
@@ -42,9 +38,6 @@ class Evaluator:
 
         # Setup arguments
         self.metric_output_path = args.metric_output_path
-
-        # Code evaluation permission
-        self.allow_code_execution = args.allow_code_execution
         
         logger.info(f"Evaluator initialized with metric output path: {self.metric_output_path}")
 
@@ -200,10 +193,6 @@ class Evaluator:
         logger.info(f"Starting evaluation for task: {task_name}")
         task = tasks.get_task(task_name, self.args)
         
-        # Check code execution permission
-        if task.requires_execution and not self.allow_code_execution:
-            raise ValueError(_WARNING)
-
         # Generate text
         generations, references, old_texts, comments = self.generate_text(
             task_name, 
@@ -225,8 +214,6 @@ class Evaluator:
 
             # Configure environment for evaluation
             os.environ["TOKENIZERS_PARALLELISM"] = "false"
-            if self.allow_code_execution and task.requires_execution:
-                os.environ["HF_ALLOW_CODE_EVAL"] = "1"
             
             # Get task-specific comparison configuration
             config = self._get_comparison_config(task_name)

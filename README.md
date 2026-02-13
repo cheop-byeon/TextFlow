@@ -19,9 +19,6 @@ echo "EBROOTMINCONDA3: ${EBROOTMINICONDA3}"
 conda create -p path/to/conda_env python=3.11
 conda activate path/to/conda_env
 
-# Install PyTorch (choose based on your hardware: https://pytorch.org/get-started/locally/)
-pip install torch torchvision torchaudio
-
 # Install TextFlow and dependencies
 pip install -e .
 
