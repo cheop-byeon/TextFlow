@@ -9,6 +9,16 @@ TextFlow is an evaluation framework for internet-drafts/RFCs text revision tasks
 git clone https://github.com/cheop-byeon/TextFlow.git
 cd TextFlow
 
+module load Miniconda3/22.11.1-1
+export PS1=\$
+source ${EBROOTMINICONDA3}/etc/profile.d/conda.sh
+conda deactivate &>/dev/null
+echo "Conda environments: $(conda info --envs)"
+echo "EBROOTMINCONDA3: ${EBROOTMINICONDA3}"
+
+conda create -p path/to/conda_env python=3.11
+conda activate path/to/conda_env
+
 # Install PyTorch (choose based on your hardware: https://pytorch.org/get-started/locally/)
 pip install torch torchvision torchaudio
 

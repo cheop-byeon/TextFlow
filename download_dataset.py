@@ -61,7 +61,12 @@ def download_dataset(split: str = None) -> None:
         
         try:
             # Load dataset from HuggingFace Hub
-            dataset = load_dataset(REPO_ID, split=split_name)
+            # Load all data first, then extract the specific split file
+            dataset = load_dataset(
+                REPO_ID, 
+                data_files=filename,
+                split='train'  # Use 'train' as the split name for loading individual files
+            )
             
             # Save to JSONL format
             dataset.to_json(str(output_path))
