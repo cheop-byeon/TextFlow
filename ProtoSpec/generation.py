@@ -194,9 +194,6 @@ def parallel_generations(
         n_tasks: Number of tasks to generate
         args: Arguments containing generation configuration
         curr_sample_idx: Current sample index to start from
-        save_every_k_tasks: Save intermediate results every k tasks (-1 to disable)
-        intermediate_generations: Existing intermediate generations to continue from
-        intermediate_save_generations_path: Path to save intermediate generations
         
     Returns:
         List of generated code samples

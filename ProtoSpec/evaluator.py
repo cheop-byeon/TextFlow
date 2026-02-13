@@ -88,14 +88,12 @@ class Evaluator:
 
     def generate_text(
         self, 
-        task_name: str, 
-        intermediate_generations: Optional[List] = None
+        task_name: str
     ) -> Tuple[List[List[str]], List[str], List[str], List[str]]:
         """Generate text for a given task.
         
         Args:
             task_name: Name of the task to generate text for
-            intermediate_generations: Optional list of intermediate generations to continue from
             
         Returns:
             Tuple of (generations, references, old_texts, comments)
@@ -107,31 +105,7 @@ class Evaluator:
         n_tasks = self._calculate_n_tasks(len(dataset))
         references, old_texts, comments = self._extract_dataset_fields(task, dataset, n_tasks)
 
-        # Check references mode
-        if self.args.check_references:
-            logger.info("Check references mode enabled")
-            if "get_solution" in inspect.signature(task.get_reference).parameters:
-                solutions = [
-                    [task.get_reference(dataset[i], get_solution=True)] 
-                    for i in range(self.args.limit_start, self.args.limit_start + n_tasks)
-                ]
-            else:
-                solutions = [[ref] for ref in references]
-            return solutions, references, old_texts, comments
-
-        # Handle intermediate generations
-        curr_generations = []
-        if intermediate_generations:
-            curr_generations = [gen for gen in intermediate_generations if gen]
-            n_tasks -= len(curr_generations)
-            logger.info(f"Continuing from {len(curr_generations)} intermediate generations")
-        
-        intermediate_save_path = (
-            f"{os.path.splitext(self.args.save_generations_path)[0]}_{task_name}_intermediate.json"
-        )
-        curr_sample_idx = len(curr_generations)
-
-        logger.info(f"Generating {n_tasks} new samples (starting from index {curr_sample_idx})")
+        logger.info(f"Generating {n_tasks} new samples")
         generations = parallel_generations(
             task,
             dataset,
@@ -140,10 +114,7 @@ class Evaluator:
             self.tokenizer,
             n_tasks=n_tasks,
             args=self.args,
-            curr_sample_idx=curr_sample_idx,
-            save_every_k_tasks=self.args.save_every_k_tasks,
-            intermediate_generations=curr_generations,
-            intermediate_save_generations_path=intermediate_save_path,
+            curr_sample_idx=0,
         )
 
         # Trim excess generations if needed
@@ -175,7 +146,6 @@ class Evaluator:
     def evaluate(
         self, 
         task_name: str, 
-        intermediate_generations: Optional[List] = None, 
         compare_old: bool = False, 
         compare_comm: bool = False
     ) -> Dict[str, Any]:
@@ -183,7 +153,6 @@ class Evaluator:
         
         Args:
             task_name: Name of the task to evaluate
-            intermediate_generations: Optional list of intermediate generations
             compare_old: Whether to compare with old text (overridden by task config)
             compare_comm: Whether to compare with comments (overridden by task config)
             
@@ -194,10 +163,7 @@ class Evaluator:
         task = tasks.get_task(task_name, self.args)
         
         # Generate text
-        generations, references, old_texts, comments = self.generate_text(
-            task_name, 
-            intermediate_generations=intermediate_generations
-        )
+        generations, references, old_texts, comments = self.generate_text(task_name)
         
         if self.accelerator.is_main_process:
             # Save generations if not loading from file

@@ -155,12 +155,6 @@ def parse_args():
         help="Optional offset to start from when limiting the number of samples",
     )
     parser.add_argument(
-        "--save_every_k_tasks",
-        type=int,
-        default=-1,
-        help="Optional saving after every k tasks",
-    )
-    parser.add_argument(
         "--postprocess",
         action="store_false",
         help="Postprocess model outputs before execution, always on except during generation tests",
@@ -194,12 +188,6 @@ def parse_args():
         help="Whether to save code generations",
     )
     parser.add_argument(
-        "--load_generations_intermediate_paths",
-        type=str,
-        nargs="*",
-        help="List of paths for saving the intermediate code generations",
-    )
-    parser.add_argument(
         "--save_generations_path",
         type=str,
         default="generations.json",
@@ -221,11 +209,6 @@ def parse_args():
         type=str,
         default=None,
         help="Max memroy to allocate per gpu, you can also use 'auto'",
-    )
-    parser.add_argument(
-        "--check_references",
-        action="store_true",
-        help="Don't run generation but benchmark groundtruth (useful for debugging)",
     )
     return parser.parse_args()
 
@@ -385,27 +368,11 @@ def main():
 
         evaluator = Evaluator(accelerator, model, tokenizer, args)
 
-        if args.load_generations_intermediate_paths:
-            if len(args.load_generations_intermediate_paths) != len(task_names):
-                raise ValueError(
-                    f"Number of intermediate generation paths ({len(args.load_generations_intermediate_paths)}) "
-                    f"must match number of tasks ({len(task_names)})"
-                )
-
         for idx, task in enumerate(task_names):
-            intermediate_generations = None
-            if args.load_generations_intermediate_paths:
-                intermediate_path = args.load_generations_intermediate_paths[idx]
-                logger.info(f"Loading intermediate generations from: {intermediate_path}")
-                with open(intermediate_path, "r") as f_in:
-                    intermediate_generations = json.load(f_in)
-
             if args.generation_only:
                 if accelerator.is_main_process:
                     logger.info(f"Generating code for task: {task}")
-                generations, references, _, _ = evaluator.generate_text(
-                    task, intermediate_generations=intermediate_generations
-                )
+                generations, references, _, _ = evaluator.generate_text(task)
                 if accelerator.is_main_process:
                     base_name = os.path.splitext(args.save_generations_path)[0]
                     save_generations_path = f"{base_name}_{task}.json"
@@ -420,9 +387,7 @@ def main():
             else:
                 if accelerator.is_main_process:
                     logger.info(f"Evaluating task: {task}")
-                results[task] = evaluator.evaluate(
-                    task, intermediate_generations=intermediate_generations
-                )
+                results[task] = evaluator.evaluate(task)
 
     # Save results and configuration
     results["config"] = vars(args)
