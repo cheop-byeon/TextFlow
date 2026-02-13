@@ -59,13 +59,15 @@ class IdsTextFlow(Task):
             smooth: Whether to use smoothing for BLEU score
             dataset_path: Path to the dataset file (optional, defaults to DEFAULT_DATASET_PATH)
         """
+        # Set dataset path before calling parent init (parent needs it to load dataset)
+        self.DATASET_PATH = dataset_path if dataset_path is not None else self.DEFAULT_DATASET_PATH
+        
         super().__init__(
             stop_words=["\n"],
             requires_execution=False,
         )
         self.max_order = max_order
         self.smooth = smooth
-        self.DATASET_PATH = dataset_path if dataset_path is not None else self.DEFAULT_DATASET_PATH
         logger.info(f"Initialized IdsBase2 with dataset: {self.DATASET_PATH}")
 
     def get_dataset(self):
