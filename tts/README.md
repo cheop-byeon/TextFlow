@@ -4,9 +4,9 @@ This directory contains scripts for generating text revisions using Qwen models 
 
 ## Main Script
 
-### `my_gen_qwen_32b_think_and_wait.py`
+### `ids_edit_reasoning_tts.py`
 
-Generate text with optional thinking and waiting phases using the Qwen 2.5 32B Instruct model.
+Generate text with optional thinking and waiting phases using the reasoning models, e.g., Qwen 2.5 32B Instruct model.
 
 **Key Features:**
 - Optional "wait" phase after the thinking phase
