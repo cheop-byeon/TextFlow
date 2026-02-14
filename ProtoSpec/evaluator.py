@@ -167,16 +167,11 @@ class Evaluator:
         
         if self.accelerator.is_main_process:
             # Save generations if not loading from file
-            if not self.args.load_generations_path:
-                save_generations_path = (
-                    f"{os.path.splitext(self.args.save_generations_path)[0]}_{task_name}.json"
-                )
-                self.save_json_files(
-                    generations, 
-                    references, 
-                    save_generations_path, 
-                    f"references_{task_name}.json"
-                )
+            if not self.args.load_generations_path and self.args.save_generations:
+                save_generations_path = self.args.save_generations_path
+                with open(save_generations_path, "w") as fp:
+                    json.dump(generations, fp, indent=2)
+                logger.info(f"Generations saved to: {save_generations_path}")
 
             # Configure environment for evaluation
             os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -207,28 +202,3 @@ class Evaluator:
             
             logger.info(f"Evaluation complete for task: {task_name}")
             return {'gold': results0, 'old': results1, 'comments': results2}
-
-    def save_json_files(
-        self,
-        generations: List[str],
-        references: List[str],
-        save_generations_path: str,
-        save_references_path: str,
-    ) -> None:
-        """Save generations and references to JSON files.
-        
-        Args:
-            generations: List of generated texts to save
-            references: List of reference texts to save
-            save_generations_path: Path to save generations
-            save_references_path: Path to save references
-        """
-        if self.args.save_generations:
-            with open(save_generations_path, "w") as fp:
-                json.dump(generations, fp, indent=2)
-            logger.info(f"Generations saved to: {save_generations_path}")
-            
-        if self.args.save_references:
-            with open(save_references_path, "w") as fp:
-                json.dump(references, fp, indent=2)
-            logger.info(f"References saved to: {save_references_path}")

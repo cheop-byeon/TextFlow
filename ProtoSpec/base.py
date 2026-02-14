@@ -24,10 +24,14 @@ class Task(ABC):
         """
         self.stop_words = stop_words
         self.requires_execution = requires_execution
+        
+        if self.DATASET_PATH is None:
+            raise ValueError("DATASET_PATH must be set before calling Task.__init__()")
+        
         try:
             self.dataset = load_dataset('json', data_files=self.DATASET_PATH)
         except Exception as e:
-            warn(f"Failed to load dataset from {self.DATASET_PATH}: {e}. Falling back to locally downloaded dataset.")
+            raise RuntimeError(f"Failed to load dataset from {self.DATASET_PATH}: {e}")
 
     @abstractmethod
     def get_dataset(self):

@@ -9,6 +9,7 @@ TextFlow is an evaluation framework for internet-drafts/RFCs text revision tasks
 git clone https://github.com/cheop-byeon/TextFlow.git
 cd TextFlow
 
+module load CUDA/12.6.0
 module load Miniconda3/22.11.1-1
 export PS1=\$
 source ${EBROOTMINICONDA3}/etc/profile.d/conda.sh
@@ -27,6 +28,7 @@ accelerate config
 
 # Login to HuggingFace Hub (for private models)
 huggingface-cli login
+huggingface-cli download model_repo --local-dir local_path
 ```
 
 ## Task Overview
@@ -130,7 +132,7 @@ python main.py \
     --tasks ids_edit \
     --batch_size 1 \
     --max_new_tokens 512 \
-    --load_dataset_path ../ids/ids.i2c.test.generation.jsonl \
+    --load_dataset_path ../dataset/ids.i2c.test.generation.jsonl \
     --save_generations \
     --metric_output_path metrics.json
 ```

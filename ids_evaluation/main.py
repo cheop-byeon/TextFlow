@@ -194,17 +194,6 @@ def parse_args():
         help="Path for saving the code generations",
     )
     parser.add_argument(
-        "--save_references",
-        action="store_true",
-        help="Whether to save reference solutions/tests",
-    )
-    parser.add_argument(
-        "--save_references_path",
-        type=str,
-        default="references.json",
-        help="Path for saving the references solutions/tests",
-    )
-    parser.add_argument(
         "--max_memory_per_gpu",
         type=str,
         default=None,
@@ -375,15 +364,10 @@ def main():
                 generations, references, _, _ = evaluator.generate_text(task)
                 if accelerator.is_main_process:
                     base_name = os.path.splitext(args.save_generations_path)[0]
-                    save_generations_path = f"{base_name}_{task}.json"
-                    save_references_path = f"references_{task}.json"
+                    save_generations_path = f"{base_name}.json"
                     logger.info(f"Saving generations to: {save_generations_path}")
-                    evaluator.save_json_files(
-                        generations,
-                        references,
-                        save_generations_path,
-                        save_references_path,
-                    )
+                    with open(save_generations_path, "w") as fp:
+                        json.dump(generations, fp, indent=2)
             else:
                 if accelerator.is_main_process:
                     logger.info(f"Evaluating task: {task}")
