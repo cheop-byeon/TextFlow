@@ -16,8 +16,8 @@ Generate text with optional thinking and waiting phases using the Qwen 2.5 32B I
 **Command-Line Arguments:**
 
 - `--use_wait` - Enable the wait phase after thinking (default: `False`)
-- `--model_path` - Path to the model (default: `./Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4`)
-- `--dataset_path` - Path to the dataset (default: `./ids/ids.i2c.test.generation.jsonl`)
+- `--model_path` - Path to the model (default: `../Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4`)
+- `--dataset_path` - Path to the dataset (default: `../dataset/ids.i2c.test.generation.jsonl`)
 
 **Usage Examples:**
 
