@@ -23,13 +23,13 @@ Generate text with optional thinking and waiting phases using the Qwen 2.5 32B I
 
 ```bash
 # Without wait phase (default)
-python my_gen_qwen_32b_think_and_wait.py
+python ids_edit_reasoning_tts.py
 
 # With wait phase
-python my_gen_qwen_32b_think_and_wait.py --use_wait
+python ids_edit_reasoning_tts.py --use_wait
 
 # Custom paths
-python my_gen_qwen_32b_think_and_wait.py --use_wait \
+python ids_edit_reasoning_tts.py --use_wait \
     --model_path ./path/to/model \
     --dataset_path ./path/to/dataset.jsonl
 ```
