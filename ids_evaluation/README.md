@@ -66,7 +66,7 @@ python main.py \
     --tasks ids_edit \
     --batch_size 1 \
     --max_new_tokens 512 \
-    --load_dataset_path ./ids/ids.i2c.test.generation.jsonl \
+    --load_dataset_path ../dataset/ids.i2c.test.generation.jsonl \
     --save_generations \
     --save_generations_path generations.json \
     --metric_output_path metrics.json \
