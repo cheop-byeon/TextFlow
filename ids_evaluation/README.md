@@ -48,9 +48,6 @@ This document describes the parameters and functions available for the TextFlow 
 ### Reproducibility
 * `--seed`: Random seed for generation.
 
-### Memory Management
-* `--max_memory_per_gpu`: Maximum memory per GPU (e.g., "20GB" or "auto").
-
 ## Notes on Parameters
 
 * `max_length_generation` is the maximum token length including the input prompt. For long prompts, increase this value.

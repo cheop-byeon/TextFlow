@@ -13,6 +13,14 @@ Generate text with optional thinking and waiting phases using the reasoning mode
 - Configurable model and dataset paths
 - Outputs separate files for thinking process and final revisions
 
+**Requirements:**
+
+Install vLLM before running the script:
+
+```bash
+pip install vllm
+```
+
 **Command-Line Arguments:**
 
 - `--use_wait` - Enable the wait phase after thinking (default: `False`)

@@ -87,7 +87,7 @@ def avg_bert_score(bertscore_results: Dict[str, List[float]]) -> Dict[str, float
 class IdsTextFlow(Task):
     """Task for evaluating text revision quality using multiple metrics (test dataset)."""
     
-    DEFAULT_DATASET_PATH = "./ids/ids.i2c.test.generation.jsonl"
+    DEFAULT_DATASET_PATH = "../dataset/ids.i2c.test.generation.jsonl"
     DATASET_SPLIT = "train"  # The split name used by the dataset loader
     AVAILABLE_METRICS = ["bleu", "sacrebleu", "google_bleu", "bertscore", "meteor", "exact_match", "wer", "mauve"]
     
