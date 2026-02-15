@@ -18,6 +18,9 @@ def get_task(task_name, args=None):
         if "dataset_path" in inspect.signature(TASK_REGISTRY[task_name]).parameters:
             if args and hasattr(args, 'load_dataset_path') and args.load_dataset_path:
                 kwargs["dataset_path"] = args.load_dataset_path
+        if "metrics" in inspect.signature(TASK_REGISTRY[task_name]).parameters:
+            if args and hasattr(args, 'metrics'):
+                kwargs["metrics"] = args.metrics
         return TASK_REGISTRY[task_name](**kwargs)
     except KeyError:
         print("Available tasks:")

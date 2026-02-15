@@ -194,6 +194,13 @@ def parse_args():
         help="Path for saving the code generations",
     )
     parser.add_argument(
+        "--metrics",
+        type=str,
+        nargs="+",
+        default=None,
+        help="Metrics to evaluate. Available: bleu, sacrebleu, google_bleu, bertscore, meteor, exact_match, wer, mauve. If not specified, all metrics are computed.",
+    )
+    parser.add_argument(
         "--max_memory_per_gpu",
         type=str,
         default=None,

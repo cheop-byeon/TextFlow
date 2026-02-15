@@ -1,42 +1,109 @@
-# TextFlow Tasks
+# TextFlow: RFC Text Revision Evaluation Framework
 
-TextFlow is an evaluation framework for internet-drafts/RFCs text revision tasks. It provides three main task types for evaluating different text generation scenarios.
+**A comprehensive evaluation framework for assessing large language models' ability to revise Internet-Draft (RFC) documents through three complementary text editing scenarios.**
 
-## Quick Setup
+## Overview
 
-```bash
-# Clone the repository
-git clone https://github.com/cheop-byeon/TextFlow.git
-cd TextFlow
+TextFlow provides a reproducible research platform for evaluating text revision capabilities in the context of Internet Engineering Task Force (IETF) RFC documents. The framework implements three distinct evaluation tasks that test different aspects of LLM writing assistance:
 
-module load CUDA/12.6.0
-module load Miniconda3/22.11.1-1
-export PS1=\$
-source ${EBROOTMINICONDA3}/etc/profile.d/conda.sh
-conda deactivate &>/dev/null
-echo "Conda environments: $(conda info --envs)"
-echo "EBROOTMINCONDA3: ${EBROOTMINICONDA3}"
+- **Autocomplete**: Improving incomplete/draft text (zero-context revision)
+- **Startup**: Revising text from feedback alone (blind revision)
+- **Edit**: Revising text using both original and feedback (context-aware revision)
 
-conda create -p path/to/conda_env python=3.11
-conda activate path/to/conda_env
+This repository contains the implementation and evaluation pipeline used in the following publications:
 
-# Install TextFlow and dependencies
-pip install -e .
+### Related Publications
 
-# Configure distributed training (optional, for multi-GPU)
-accelerate config
+```
+@inproceedings{bian2025instruction,
+  title={Instruction Tuning TextFlow Semi-automatic RFCs Generation},
+  author={Bian, Jie and Welzl, Michael},
+  booktitle={International Conference on Applications of Natural Language to Information Systems},
+  pages={350--364},
+  year={2025}
+}
 
-# Login to HuggingFace Hub (for private models)
-huggingface-cli login
-huggingface-cli download model_repo --local-dir local_path
+@inproceedings{bian2025empowering,
+  title={Empowering IETF Collaboration with NLP Search Innovations and LLM-Enhanced RFC Writing},
+  author={Bian, Jie and Welzl, Michael},
+  booktitle={Proceedings of the 2025 Applied Networking Research Workshop},
+  pages={24--31},
+  year={2025}
+}
 ```
 
-## Task Overview
+---
 
-### 1. **Autocomplete** (`ids_auto_complete`)
-Generates text completions based on the original text.
+## Table of Contents
 
-**Prompt Template:**
+- [Installation](#installation)
+- [Evaluation Tasks](#evaluation-tasks)
+- [Dataset Format](#dataset-format)
+- [Quick Start](#quick-start)
+- [Running Evaluations](#running-evaluations)
+- [Evaluation Metrics](#evaluation-metrics)
+- [Advanced Features](#advanced-features)
+- [Reproducibility](#reproducibility)
+- [Citation](#citation)
+
+---
+
+## Installation
+
+### System Requirements
+
+- **Python**: 3.11+
+- **PyTorch**: 2.9.1 with CUDA support (recommended)
+- **GPU**: NVIDIA GPU with CUDA 12.6+ support (for inference acceleration)
+- **Disk Space**: ~20GB (model weights + datasets)
+
+### Dependencies
+
+Clone and install the repository:
+
+```bash
+git clone https://github.com/cheop-byeon/TextFlow.git
+cd TextFlow
+pip install -e .
+```
+
+Or install with conda (recommended for managing CUDA dependencies):
+
+```bash
+conda create -p path/to/conda_env python=3.12
+conda activate path/to/conda_env
+```
+
+### HuggingFace Hub Configuration
+
+For accessing private models or downloading large model weights:
+
+```bash
+huggingface-cli login
+```
+
+### Distributed Training Setup (Optional)
+
+For multi-GPU evaluation:
+
+```bash
+accelerate config
+```
+
+---
+
+## Evaluation Tasks
+
+### 1. Autocomplete Task (`ids_auto_complete`)
+
+**Objective**: Evaluate the model's ability to improve incomplete or draft RFC text.
+
+**Evaluation Scenario**: Zero-context revision where the model must enhance text quality without external feedback.
+
+**Input**: Original text passage from an RFC document
+**Output**: Revised/improved version of the text
+
+**Prompt Template**:
 ```
 You are a professional IETF RFC writer. 
 Please revise the following text using your knowledge and understanding.
@@ -49,14 +116,20 @@ Output:
 Revised Text:
 ```
 
-**Use Case:** Evaluating the model's ability to continue and improve incomplete or draft text.
+**Assessment Basis**: Lexical and semantic similarity between model-generated revisions and human reference revisions.
 
 ---
 
-### 2. **Startup** (`ids_startup`)
-Generates revised text based solely on feedback, without seeing the original text.
+### 2. Startup Task (`ids_startup`)
 
-**Prompt Template:**
+**Objective**: Evaluate the model's ability to revise text based exclusively on feedback guidance (blind revision).
+
+**Evaluation Scenario**: Feedback-driven revision where the model must generate improved text without seeing the original.
+
+**Input**: Feedback or review comments describing needed changes
+**Output**: Revised text that incorporates the feedback suggestions
+
+**Prompt Template**:
 ```
 You are a professional IETF RFC writer. 
 Below is some feedback discussing changes needed for a text. 
@@ -70,15 +143,34 @@ Output:
 Revised Text:
 ```
 
-**Use Case:** Evaluating the model's ability to perform blind revisions using only feedback as guidance.
+**Assessment Basis**: Model's ability to infer and apply improvements from textual guidance alone.
 
 ---
 
-### 3. **Edit** (`ids_edit`)
-Generates revised text by combining both the original text and feedback.
+### 3. Edit Task (`ids_edit`)
 
-**Prompt Template:**
+**Objective**: Evaluate context-aware text revision combining original text and feedback (standard editing scenario).
+
+**Evaluation Scenario**: Traditional document editing where the model has both source material and revision guidance.
+
+**Input**: Original text + Feedback/review comments
+**Output**: Revised text incorporating both context and feedback
+
+**Prompt Template**:
 ```
+You are a professional IETF RFC writer. 
+Identify the parts of the original text that need revision based on the feedback.
+Revise the text accordingly.
+
+Input:
+Original Text:
+{old_text}
+
+Feedback:
+{feedback}
+
+Output:
+Revised Text:
 You are a professional IETF RFC writer. 
 Identify the parts of the original text that need revision based on the feedback.
 Revise the text accordingly.
@@ -230,3 +322,8 @@ Datasets should be in JSONL format with the following structure:
 3. Select a model from HuggingFace Hub
 4. Run the evaluation command with desired parameters
 5. Results will be saved as JSON with all metrics
+
+
+## Acknowledgements
+
+This evaluation harness is derived from the [BigCode evaluation harness](https://github.com/bigcode-project/bigcode-evaluation-harness) and the [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness).
