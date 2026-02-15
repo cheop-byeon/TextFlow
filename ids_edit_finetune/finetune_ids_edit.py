@@ -5,9 +5,10 @@ from pathlib import Path
 from huggingface_hub import login
 from datasets import load_dataset
 from unsloth import FastLanguageModel
+os.environ.setdefault("TORCHDYNAMO_DISABLE", "1")
 import torch
 from trl import SFTTrainer
-from transformers import TrainingArguments
+from transformers import TrainingArguments, AutoConfig
 from unsloth import is_bfloat16_supported
 from accelerate import Accelerator
 
@@ -94,9 +95,19 @@ Revised Text:
 {}
 """
 
+def infer_dtype_from_config(model_name: str) -> torch.dtype:
+    """Infer compute dtype from model config with safe fallbacks."""
+    try:
+        config = AutoConfig.from_pretrained(model_name, trust_remote_code=True)
+        if getattr(config, "torch_dtype", None) is not None:
+            return config.torch_dtype
+    except Exception as exc:
+        logger.warning(f"Failed to read torch_dtype from config: {exc}")
+    return torch.bfloat16 if is_bfloat16_supported() else torch.float16
+
 # Initialize model and tokenizer
 logger.info("Loading model and tokenizer...")
-dtype = None
+dtype = infer_dtype_from_config(MODEL_NAME)
 accelerator = Accelerator()
 num_gpus = accelerator.num_processes
 fastLM, tokenizer = FastLanguageModel.from_pretrained(
