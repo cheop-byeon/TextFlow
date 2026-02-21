@@ -12,6 +12,34 @@ TextFlow provides a reproducible research platform for evaluating text revision 
 
 This repository contains the implementation and evaluation pipeline used in the following publications:
 
+### Slides
+
+Conference presentations are available in the [slides](slides/) directory:
+
+- **NLDB 2025** ([slides/NLDB2025.pdf](slides/NLDB2025.pdf))  
+  *International Conference on Applications of Natural Language to Information Systems*  
+  Conference Program: https://www.jaist.ac.jp/event/nldb2025/program.html
+
+- **ANRW 2025** ([slides/ANRW2025.pdf](slides/ANRW2025.pdf))  
+  *ACM/IRTF Applied Networking Research Workshop*  
+  Conference Program: https://www.irtf.org/anrw/2025/program.html
+
+- **Invited talks** ([slides/ietf124Montreal.pdf](slides/ietf124Montreal.pdf))  
+  *Research and Analysis of Standard-Setting Processes Research Group Session*
+  Conference Program: https://datatracker.ietf.org/meeting/124/session/rasprg
+
+### Videos
+
+- **IETF 123 - Applied Networking Research Workshop (ANRW) 2025**  
+  Date: July 22, 2025 at 09:30 UTC  
+  Watch the presentation: https://www.youtube.com/watch?v=45Y_IwJi9y0  
+  Session: Research presentations on LLM-enhanced RFC writing and IETF collaboration tools
+
+- **IETF 124 - rasprg session**
+  Date: 2025-11-05 15:30-17:30 CE
+  Watch the presentation: https://www.youtube.com/watch?v=rlYnQ5V8B64
+  Session: ETF 124: RASPRG Working Group 2025-11-05 14:30
+  
 ### Related Publications
 
 ```
